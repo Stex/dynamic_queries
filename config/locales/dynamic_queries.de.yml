@@ -79,6 +79,8 @@ de:
         aggregate_functions: "Aggregatfunktionen"
         conditions:          "Bedingungen"
       preview_variables_required: "Die Anfrage benötigt zur Ausführung Variablenwerte, daher ist keine Vorschau möglich."
+      connectors_and_parenthesis: "Konnektoren und Klammern"
+      save_conditions:            "Bedingungen speichern"
 
 
     show:

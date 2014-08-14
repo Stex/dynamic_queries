@@ -185,16 +185,15 @@ module DynamicQueriesHelper
   # Generate a bootstrap glyphicon tag displaying a left-right move icon
   #
   def change_order_icon
-    content_tag :span, nil, :class => 'glyphicon glyphicon-resize-horizontal'
+    glyphicon('resize-horizontal')
   end
 
   #
   # Generates a link_to_function to toggle column sorting options
   #
-  def change_order_link
-    link_to_function change_order_icon, 'dynamicQueries.actions.columnOptions.toggleColumnSorting(this)',
-                                        :title => dqt('actions.change_column_order'),
-                                        :class => 'btn btn-default btn-xs'
+  def change_order_link(caption, type)
+    link_to_function "#{caption} #{change_order_icon}".try_html_safe, "dynamicQueries.actions.columnOptions.toggleColumnSorting('#{type}')",
+                     :title => dqt('actions.change_column_order')
   end
 
   def sort_icon(direction = 'asc')
@@ -204,23 +203,20 @@ module DynamicQueriesHelper
 
   def glyphicon(klass, options = {})
     options[:class] = "glyphicon glyphicon-#{klass}"
-    content_tag :span, nil, options
+    content_tag(:span, nil, options)
   end
 
   def update_conditions_modal(content_or_hash)
     content = content_or_hash.is_a?(Hash) ? render(content_or_hash) : content_or_hash
-    res     = "dynamicQueries.actions.columnOptions.conditionsModal('update', '#{escape_javascript(content)}');"
-    res.respond_to?(:html_safe) ? res.html_safe : res
+    "dynamicQueries.actions.columnOptions.conditionsModal('update', '#{escape_javascript(content)}');".try_html_safe
   end
 
   def show_conditions_modal
-    res = "dynamicQueries.actions.columnOptions.conditionsModal('show');"
-    res.respond_to?(:html_safe) ? res.html_safe : res
+    "dynamicQueries.actions.columnOptions.conditionsModal('show');".try_html_safe
   end
 
   def hide_conditions_modal
-    res = "dynamicQueries.actions.columnOptions.conditionsModal('hide');"
-    res.respond_to?(:html_safe) ? res.html_safe : res
+    "dynamicQueries.actions.columnOptions.conditionsModal('hide');".try_html_safe
   end
 
   #

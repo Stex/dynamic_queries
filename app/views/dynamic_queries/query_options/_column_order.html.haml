@@ -1,4 +1,4 @@
-%td.column-order{:colspan => @query.columns.size, :style => 'vertical-align: middle; display: none'}
-  %ul.list-inline{:data => {'column-sorting' => true}, :style => 'margin-bottom: 0px'}
+%td.column-order{:rowspan => @query.columns.size, :style => 'display: none', :id => "column_order_#{order_type}", :data => {'column-order' => order_type}}
+  %ul.list-inline{:data => {'column-sorting' => true, :url => dq_url(:set_column_order, @query), :clause => order_type}, :style => 'margin-bottom: 0px'}
     - @query.columns_for_clause(order_type).each do |column|
       %li.order-item{:data => {:identifier => column.identifier}}= column.output_name

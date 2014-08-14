@@ -5,78 +5,54 @@
     %pre#generated_sql= @query.valid_sql? ? @query.to_sql : @query.sql_error
 
   .table-responsive
-    %table.table.table-striped.table-bordered
+    %table.table.table-striped.table-bordered.columns-table
       %thead
         %tr
-          %th{:colspan => 2}
-          - @query.columns.each do |column|
-            %th.text-center= column.name_with_table
+          %th.col-sm-3= dqt('query_options.table.custom_name')
+          %th.col-sm-1= change_order_link dqt('query_options.table.select'), 'select'
+          %th.col-sm-2= change_order_link dqt('query_options.table.order_by'), 'order_by'
+          %th.col-sm-1= dqt('query_options.table.group_by')
+          %th.col-sm-2= dqt('query_options.table.aggregate_functions')
+          %th.col-sm-3= dqt('query_options.table.conditions')
       %tbody
-        %tr
-          %th.text-center= dqt('query_options.table.custom_name')
-          %th
-          - @query.columns.each do |column|
-            %td= text_field_tag :custom_name, column.custom_name, column_options_data(column, :custom_name, :placeholder => column.name, :class => 'form-control input-sm')
-
-        / SELECT
-        %tr{:data => {:clause => 'select', :url => dq_url(:set_column_order, @query)}}
-          %th.text-center
-            = dqt('query_options.table.select')
-          %th.text-center= change_order_link
-          - @query.columns.each do |column|
-            %td.text-center= check_box_tag :show, '1', column.show?, column_options_data(column, :show)
-          = render :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => 'select'}
-
-        / ORDER BY
-        %tr{:data => {:clause => 'order_by', :url => dq_url(:set_column_order, @query)}}
-          %th.text-center
-            = dqt('query_options.table.order_by')
-          %th.text-center= change_order_link
-          - @query.columns.each do |column|
-            %td.text-center= select_tag :order_by, sort_directions(column), column_options_data(column, :order_by, :class => 'form-control input-sm')
-          = render :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => 'order_by'}
-
-        / GROUP BY
-        %tr
-          %th.text-center= dqt('query_options.table.group_by')
-          %th
-          - @query.columns.each do |column|
-            %td.text-center= check_box_tag :group_by, '1', column.group_by?, column_options_data(column, :group_by)
-
-        / Aggregate Functions
-        %tr
-          %th.text-center= dqt('query_options.table.aggregate_functions')
-          %th
-          - @query.columns.each do |column|
-            %td.text-center
-              = select_tag :aggregate_function, aggregate_function_options(column), column_options_data(column, :aggregate_function, :class => 'form-control input-sm')
-
-        / Conditions
-        %tr{:style => 'border-top: 2px solid grey;'}
-          %th.text-center= dqt('query_options.table.conditions')
-          %th
-          - @query.columns.each do |column|
+        - @query.columns.each_with_index do |column, index|
+          %tr
+            %td= text_field_tag :custom_name, column.custom_name, column_options_data(column, :custom_name, :placeholder => column.output_name, :class => 'form-control input-sm')
+            %td{:data => {'column-order' => 'select'}}= check_box_tag :show, '1', column.show?, column_options_data(column, :show)
+            - if index.zero?
+              = render :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => 'select'}
+            %td{:data => {'column-order' => 'order_by'}}= select_tag :order_by, sort_directions(column), column_options_data(column, :order_by, :class => 'form-control input-sm')
+            - if index.zero?
+              = render :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => 'order_by'}
+            %td= check_box_tag :group_by, '1', column.group_by?, column_options_data(column, :group_by)
+            %td= select_tag :aggregate_function, aggregate_function_options(column), column_options_data(column, :aggregate_function, :class => 'form-control input-sm')
             %td{:id => column.dom_id(:conditions)}= render :partial => 'dynamic_queries/query_options/column_conditions', :locals => {:column => column}
 
         / Condition Arrangement
         %tr
           %th.text-center
-            = link_to_function dqt('actions.save'), "dynamicQueries.actions.columnOptions.updateConditionOrder('#{dq_url(:update_condition_order, @query)}')"
-          %th
-            %ul.list-unstyled
+            = link_to_function dqt('query_options.save_conditions'),
+                               "dynamicQueries.actions.columnOptions.updateConditionOrder('#{dq_url(:update_condition_order, @query)}')",
+                               :class => 'btn btn-success btn-lg'
+          %td.text-left#condition_order{:colspan => 5}
+            %p.text-info= dqt('help.condition_order')
+
+            %h4.fancy{:style => 'margin-top: 30px;'}
+              %span= dqt('query_options.connectors_and_parenthesis')
+
+            %ul.list-inline
               %li.order-item.query-column-condition.text-center{:data => {:identifier => '()', :connector => true}}= '( )'
               %li.order-item.query-column-condition.text-center{:data => {:identifier => 'and', :connector => true}}= ' AND '
               %li.order-item.query-column-condition.text-center{:data => {:identifier => 'or', :connector => true}}= ' OR '
-          %td#condition_order{:colspan => @query.columns.size}
-            %p.text-info= dqt('help.condition_order')
-            %h4.fancy
+
+            %h4.fancy{:style => 'margin-top: 30px;'}
               %span WHERE
 
             %ul.list-inline{:data => {:droppable => 'conditions', 'condition-clause' => 'where'}, :style => 'width: 100%; min-height: 30px;'}
               = render :partial => 'dynamic_queries/query_options/condition_order', :locals => {:conditions => @query.where_conditions}
             %p.text-danger{:style => 'display: none', :data => {'condition-clause' => 'where'}}
 
-            %h4.fancy
+            %h4.fancy{:style => 'margin-top: 30px;'}
               %span HAVING
 
             %ul.list-inline{:data => {:droppable => 'conditions', 'condition-clause' => 'having'}, :style => 'width: 100%; min-height: 30px;'}

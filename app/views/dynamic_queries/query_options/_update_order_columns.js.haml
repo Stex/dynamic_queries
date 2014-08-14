@@ -1,4 +1,4 @@
 - [:order_by, :select].each do |order_type|
-  = js_replace_element "tr[data-clause=#{order_type}] td.column-order", :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => order_type}
+  = js_replace_element "#column_order_#{order_type}", :partial => 'dynamic_queries/query_options/column_order', :locals => {:order_type => order_type}
 
 dynamicQueries.actions.columnOptions.initColumnSortables()
