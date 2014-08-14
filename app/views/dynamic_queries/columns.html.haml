@@ -1,0 +1,16 @@
+#dynamic_queries
+  .page-header
+    %h1= dqt('columns.page_header')
+    = render :partial => 'progressbar'
+    %pre#generated_sql= @query.valid_sql? ? @query.to_sql : @query.sql_error
+
+
+  .model-canvas
+    = render :partial => 'dynamic_queries/columns/model_panel', :collection => @query.models
+    .clearfix
+
+
+:javascript
+  $(document).ready(function() {
+    dynamicQueries.actions.columns.init("#{dq_url(:update_model_positions, @query)}", #{columns_associations_json});
+  });

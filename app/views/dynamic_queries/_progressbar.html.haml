@@ -1,0 +1,11 @@
+%ul.nav.nav-pills.progress-navigation#dynamic_queries_progress
+  %li= link_to dqt('back_to_index'), dq_url
+  - [:edit, :associations, :columns, :query_options].each do |step|
+    - class_name = !@query.step_available?(step) ? 'disabled' : ''
+    - class_name = current_step?(step) ? 'active' : class_name
+
+    %li{:class => class_name}
+      - if !@query.new_record? && @query.step_available?(step)
+        = link_to dqt("step_#{step}"), dq_url(step, @query)
+      - else
+        = link_to_function dqt("step_#{step}"), ''

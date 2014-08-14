@@ -1,0 +1,4 @@
+- DynamicQueries::Condition::CONDITION_CLAUSES.each do |clause|
+  = js_update_element "#condition_order ul[data-condition-clause=#{clause}]",
+                      :partial => 'dynamic_queries/query_options/condition_order', :locals => {:conditions => @query.clause_conditions(clause)}
+  = js_hide_element "#condition_order p.text-danger[data-condition-clause=#{clause}]"

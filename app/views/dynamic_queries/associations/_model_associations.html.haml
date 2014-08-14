@@ -1,0 +1,24 @@
+-# This partial represents a model box (resp. panel)
+-# in the /associations step of query creation.
+
+
+.panel-heading
+  %h3.panel-title
+    #{model.human_name} (#{model.table_name})
+    - unless @query.main_model?(model)
+      = link_to_remote remove_icon, :url => dq_url(:remove_model, @query, :model_name => model.to_s),
+                                    :html => {:class => 'pull-right'}
+
+
+.list-group
+  - if @query.joined_model?(model)
+    - model.associations.each do |association|
+      - if @query.has_association?(association)
+        %div{association_row_options(association)}
+          = association.name
+          = badge(association.macro_string)
+      - elsif @query.available_association?(association)
+        = add_association_link(association)
+  - else
+    .text-center
+      = dqt('associations.model_not_part_of_join_chain')

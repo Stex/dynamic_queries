@@ -1,0 +1,16 @@
+%tbody{:id => column.dom_id}
+  %tr{column_row_options(column)}
+    %td= link_to_remote action_icon(:add), :url => dq_url(:add_column, @query, :model_name => column.model.to_s, :column_name => column.name)
+    %td.key-icons
+      - if column.primary_key?
+        %span.primary-key
+      - elsif column.foreign_key?
+        %span.foreign-key
+    %td= column.name
+    %td{:title => column.sql_type}= ellipsis_snippet(column.sql_type, 10)
+
+  - @query.query_columns_for_column(column).each do |query_column|
+    %tr.info{:id => query_column.dom_id}
+      %td
+      %td= link_to_remote action_icon(:remove), :url => dq_url(:remove_column, @query, :column_identifier => query_column.identifier)
+      %td{:colspan => 2}= query_column.output_name

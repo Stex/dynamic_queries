@@ -1,0 +1,20 @@
+.list-group
+  - column.conditions.each do |condition|
+    .list-group-item.list-group-item-sm.query-column-condition{:data => {:identifier => "#{condition.query_column.identifier}.#{condition.identifier}",
+                                                                         'caption'   => condition.to_s,
+                                                                         'clause'    => condition.where_condition? ? 'where' : 'having'}}
+      - if condition.type?(:null_test)
+        = condition.right_side_string
+      - else
+        = condition.comparator
+        = condition.right_side_string
+      .pull-right
+        = link_to_remote remove_icon, :url => dq_url(:remove_condition, @query, :column_identifier => column.identifier, :condition_identifier => condition.identifier)
+        = link_to_remote action_icon(:edit), :url => dq_url(:edit_condition, @query,
+                                                            :column_identifier => column.identifier,
+                                                            :condition_identifier => condition.identifier),
+                                             :method => :get
+
+  .list-group-item.list-group-item-sm.text-center
+    = link_to_remote action_icon(:add), :url => dq_url(:new_condition, @query, :column_identifier => column.identifier),
+                                        :method => :get

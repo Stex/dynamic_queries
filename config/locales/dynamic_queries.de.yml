@@ -1,0 +1,110 @@
+de:
+  activerecord:
+    models:
+      dynamic_queries/query:
+        one:   "Dynamische Anfrage"
+        other: "Dynamische Anfragen"
+    attributes:
+      dynamic_queries/query:
+        name:                    "Name der Anfrage"
+        description:             "Beschreibung"
+        required_variable_names: "Verwendete Variablen"
+        main_model_name:         "Haupttabelle"
+
+  dynamic_queries:
+    actions:
+      cancel:              "Abbrechen"
+      change_column_order: "Reihenfolge der Spalten ändern"
+      destroy:             "Anfrage löschen"
+      edit:                "Bearbeiten"
+      new:                 "Neue Anfrage"
+      edit_condition:      "Bedingung bearbeiten"
+      save:                "Speichern"
+
+    aggregate_functions:
+      count:          "Anzahl der Spaltenwerte"
+      distinct_count: "Anzahl der eindeutigen Spaltenwerte"
+      min:            "Mininum der Spaltenwerte"
+      max:            "Maximum der Spaltenwerte"
+      sum:            "Summe der Spaltenwerte"
+      avg:            "Durchschnitt der Spaltenwerte"
+
+    preview: "Vorschau"
+    total_rows:
+      one:   "Die Anfrage ergab eine Zeile"
+      other: "Die Anfrage ergab %{count} Zeilen"
+
+    back_to_index:      "Zurück zur Anfragenliste"
+    step_edit:          "1. Tabellenauswahl"
+    step_associations:  "2. Joins"
+    step_columns:       "3. Spalten"
+    step_query_options: "4. Anfragendetails"
+
+    sort_directions:
+      asc:  "Aufsteigend"
+      desc: "Absteigend"
+
+    associations:
+      page_header: "Schritt 2: Auswahl der Beziehungen"
+      model_not_part_of_join_chain: "Dieses Model ist nicht Bestandteil der JOIN-Kette, daher können Sie keine weiteren Beziehungen hinzufügen."
+
+    columns:
+      page_header: "Schritt 3: Auswahl der Tabellenspalten"
+
+    destroy:
+      flash:
+        success: "Die Anfrage wurde erfolgreich gelöscht."
+        error:   "Die Anfrage konnte nicht gelöscht werden."
+
+    new:
+      page_header:     "Schritt 1: Auswahl der Haupttabelle"
+      submit_caption:  "Models speichern und weiter"
+      table:
+        main_model:      "Hauptmodel"
+        use_model:       "Model einbeziehen"
+        table_name:      "Tabellenname"
+        model_name:      "Modelname"
+
+    query_options:
+      page_header: "Schritt 4: Details, Details, Details"
+      table:
+        column_name:         "Spalte"
+        custom_name:         "Ausgabename"
+        select:              "Ausgabe"
+        select_order:        "Reihenfolge der Ausgabe"
+        order_by:            "Sortierung"
+        order_by_order:      "Reihenfolge der Sortierung"
+        group_by:            "GROUP BY"
+        aggregate_functions: "Aggregatfunktionen"
+        conditions:          "Bedingungen"
+      preview_variables_required: "Die Anfrage benötigt zur Ausführung Variablenwerte, daher ist keine Vorschau möglich."
+
+
+    show:
+      page_header:                "Anfrage ausführen: %{name}"
+      variables_required:         "Zur Ausführung der Anfrage werden Werte für folgende Variablen benötigt:"
+      update_variable_assignment: "Anfrage mit diesen Werten ausführen"
+
+    condition_types:
+      null_test: "NULL / NOT NULL"
+      value:     "Vergleich mit Wert"
+      column:    "Vergleich mit Spalte"
+      variable:  "Vergleich mit Variable"
+
+    errors:
+      conditions:
+        compare_variable_name:
+          blank: "Bitte geben Sie einen Variablennamen an."
+        null_test_value:
+          invalid_value: "Bitte benutzen Sie nur die vorgegebenen Werte."
+      condition_groups:
+        unconnected_identifiers: "Aufeinanderfolgende Bedingungen müssen mit AND oder OR verbunden werden"
+        connector_after_connector: "Vor und hinter AND und OR muss sich eine Bedingung befinden"
+        starting_with_connector: "Die Bedingungen dürfen nicht mit AND oder OR anfangen"
+        ending_with_connector: "Die Bedingungen dürfen nicht mit AND oder OR enden"
+
+    help:
+      condition_order: "In diesem Bereich können Sie Spaltenbedingungen durch Drag'n'Drop anordnen. Bitte beachten Sie,
+                        dass bestimmte Bedingungen in den WHERE und andere in den HAVING-Bereich gehören, die entsprechende
+                        Sektion wird jedoch automatisch hervorgehoben, sobald Sie eine Bedingung mit der Maus ziehen.
+                        Wenn Sie die Bedingungen fertiggestellt haben, klicken Sie links auf 'Speichern'"

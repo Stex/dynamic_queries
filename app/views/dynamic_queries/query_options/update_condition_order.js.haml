@@ -1,0 +1,8 @@
+- if @result
+  = render :partial => 'dynamic_queries/query_options/reload_condition_clause_lists'
+  = render :partial => 'dynamic_queries/query_options/update_preview'
+  = render :partial => 'dynamic_queries/update_generated_sql'
+- else
+  - DynamicQueries::Condition::CONDITION_CLAUSES.each do |clause|
+    = js_update_element "#condition_order p.text-danger[data-condition-clause=#{clause}]", @query.condition_errors(clause.to_sym).to_sentence
+    = js_show_element "#condition_order p.text-danger[data-condition-clause=#{clause}]"

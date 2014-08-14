@@ -1,0 +1,9 @@
+- if @result
+  = render :partial => 'dynamic_queries/query_options/reload_column_conditions'
+  = render :partial => 'dynamic_queries/query_options/reload_condition_clause_lists'
+  = render :partial => 'dynamic_queries/update_generated_sql'
+  = render :partial => 'dynamic_queries/query_options/update_preview'
+  = hide_conditions_modal
+- else
+  = update_conditions_modal :partial => 'dynamic_queries/query_options/condition_form'
+  $('#conditions_modal input[type=radio][data-init=show-condition-type]:checked').trigger('click');

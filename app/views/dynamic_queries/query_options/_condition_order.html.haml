@@ -1,0 +1,10 @@
+- conditions.to_array.each do |token|
+  - if token.is_a?(DynamicQueries::Condition)
+    - data = {:identifier => "#{token.query_column.identifier}.#{token.identifier}",
+              :caption    => token.to_s}
+  - else
+    - data = {:identifier => token, :caption => token}
+
+  %li.order-item{:data => data}
+    = data[:caption]
+    = remove_icon

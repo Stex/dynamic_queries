@@ -1,0 +1,8 @@
+- if @result
+  - @query.models.each do |model|
+    = update_model_panel(model)
+
+  = redraw_connections
+  = resize_canvas
+
+  = render :partial => 'dynamic_queries/update_generated_sql'

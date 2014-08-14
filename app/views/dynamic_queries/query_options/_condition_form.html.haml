@@ -1,0 +1,40 @@
+.modal-dialog.modal-lg
+  .modal-content
+    - form_remote_for @condition, :url => dq_url(:update_condition, @query) do |f|
+      = hidden_field_tag :column_identifier, f.object.query_column.identifier
+      = hidden_field_tag :condition_identifier, f.object.identifier
+
+      .modal-header
+        %h4
+          = dqt('actions.edit_condition')
+          %button.close{:type => :button, :data => {:dismiss => :modal}, 'aria-hidden' => :true} &times;
+      .modal-body
+        .btn-group{:data => {:toggle => :buttons}}
+          - DynamicQueries::Condition::CONDITION_TYPES.each do |ct|
+            %label.btn.btn-primary
+              = f.radio_button :condition_type, ct, 'data-init' => 'show-condition-type'
+              = dqt("condition_types.#{ct}")
+
+        %table.table.table-condensed{:style => 'margin-top: 30px;'}
+          %tr
+            %td{:style => 'vertical-align: middle'}= f.object.query_column.output_name
+            %td.condition-type.type-value.type-column.type-variable
+              = f.select :comparator, f.object.comparator_options, {}, :class => 'form-control'
+            %td.condition-type.type-value
+              = f.text_field :compare_value, :class => 'form-control'
+            %td.condition-type.type-null_test
+              = f.select :null_test_value, [['IS NULL', 'null'], ['IS NOT NULL', 'not_null']], {}, :class => 'form-control'
+              - if f.object.errors_on?(:null_test_value)
+                %span.help-block.text-danger
+                  = f.object.errors_on(:null_test_value).to_sentence
+            %td.condition-type.type-column
+              = f.select :compare_column_identifier, f.object.column_options, {}, :class => 'form-control'
+            %td.condition-type.type-variable
+              = f.text_field :compare_variable_name, :class => 'form-control'
+              - if f.object.errors_on?(:compare_variable_name)
+                %span.help-block.text-danger
+                  = f.object.errors_on(:compare_variable_name).to_sentence
+
+      .modal-footer
+        %button.btn.btn-default{:type => :button, :data => {:dismiss => :modal}}= dqt('actions.cancel')
+        = submit_tag dqt('actions.save'), :class => 'btn btn-success'

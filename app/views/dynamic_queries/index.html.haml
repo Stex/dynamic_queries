@@ -1,0 +1,21 @@
+.page-header
+  %h1
+    = DynamicQueries::Query.human_name(:count => 2)
+    %small.pull-right= link_to dqt('actions.new'), dq_url(:new), :class => 'btn btn-default'
+
+%table.table
+  %thead
+    %tr
+      %th= DynamicQueries::Query.human_attribute_name(:name)
+      %th= DynamicQueries::Query.human_attribute_name(:description)
+      %th= DynamicQueries::Query.human_attribute_name(:required_variable_names)
+      %th
+  %tbody
+    - @queries.each do |query|
+      %tr
+        %td= link_to_if query.executable?, query.name, dq_url(nil, query)
+        %td{:title => query.description}= ellipsis_snippet(query.description, 30)
+        %td= query.required_variable_names.to_sentence
+        %td.text-right
+          = link_to action_icon(:edit), dq_url(query.edit_step, query), :class => 'btn btn-default btn-xs', :title => dqt('actions.edit')
+          = link_to remove_icon, dq_url(nil, query), :method => :delete, :title => dqt('actions.destroy'), :class => 'btn btn-default btn-xs'

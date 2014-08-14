@@ -1,0 +1,4 @@
+%td.column-order{:colspan => @query.columns.size, :style => 'vertical-align: middle; display: none'}
+  %ul.list-inline{:data => {'column-sorting' => true}, :style => 'margin-bottom: 0px'}
+    - @query.columns_for_clause(order_type).each do |column|
+      %li.order-item{:data => {:identifier => column.identifier}}= column.output_name

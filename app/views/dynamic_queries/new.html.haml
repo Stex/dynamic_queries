@@ -1,0 +1,48 @@
+#dynamic_queries
+  .page-header
+    %h1= dqt('new.page_header')
+    = render :partial => 'progressbar'
+
+  - url = @query.new_record? ? dq_url : dq_url(nil, @query)
+  - form_for @query, :url => url do |f|
+
+    .row
+      .col-sm-12
+        .form-group
+          = f.label :name
+          = f.text_field :name, :class => 'form-control'
+    .row
+      .col-sm-12
+        .form-group
+          = f.label :description
+          = f.text_area :description, :class => 'form-control'
+
+    %hr{:size => 1}
+
+    .table-responsive
+      %table.table.table-condensed.table-striped
+        %thead
+          %tr
+            %th.text-center= dqt('new.table.use_model')
+            %th.text-center= dqt('new.table.main_model')
+            %th= dqt('new.table.table_name')
+            %th= dqt('new.table.model_name')
+        %tbody
+          - DynamicQueries::DataCache.models.values.sort_by(&:table_name).each do |model|
+            %tr
+              %td.text-center= check_box_tag 'dynamic_queries_query[model_names][]', model.name, f.object.includes_model?(model)
+              %td.text-center= f.radio_button :main_model_name, model.name
+              %td= model.table_name
+              %td= model.human_name(:count => 2)
+
+    %hr{:size => 1}
+
+    .text-right
+      - if @query.new_record?
+        = link_to dqt('back_to_index'), dq_url, :class => 'btn btn-default'
+      = f.submit dqt('new.submit_caption'), :class => 'btn btn-success'
+
+:javascript
+  $(document).ready(function() {
+    dynamicQueries.actions.new.init();
+  });

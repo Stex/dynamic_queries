@@ -1,0 +1,27 @@
+- if @query.requires_variables?
+  %p.text-info= dqt('query_options..preview_variables_required')
+- elsif @query.select_columns.any? && @query.valid_sql?
+  - result_set = @query.execute(:page => 1, :per_page => 5)
+
+  %thead
+    %tr
+      - @query.select_columns.each do |column|
+        %th.text-center
+          = column.output_name
+          = sort_icon(column.order_by) if column.order_by?
+
+
+  %tbody
+
+    - result_set.each do |result|
+      %tr
+        - @query.select_columns.each do |column|
+          %td.text-center
+            - if result[column].is_a?(TrueClass) or result[column].is_a?(FalseClass)
+              = checkbox_icon(result[column])
+            - else
+              = result[column]
+
+    %tr
+      %td{:colspan => @query.select_columns.size}
+        %i= dqt(:total_rows, :count => result_set.total_count)

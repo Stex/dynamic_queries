@@ -1,0 +1,52 @@
+#dynamic_queries
+  .page-header
+    %h1
+      = @query.name
+      = link_to dqt('back_to_index'), dq_url, :class => 'btn btn-default pull-right'
+
+
+  - if @query.requires_variables?
+
+    .row
+      .col-md-8.col-md-offset-2
+        .variables-box
+          %p.text-info.text-center= dqt('show.variables_required')
+
+          - form_tag dq_url(nil, @query), :class => 'form-horizontal', :role => 'form', :method => :get do
+            - @query.required_variable_names.each_with_index do |variable_name, index|
+              .form-group
+                = label_tag "variable_#{index}", variable_name, :class => 'col-sm-2 control-label'
+                .col-sm-10
+                  = text_field_tag "variable_#{index}", given_variable_value(variable_name), :name => "variables[#{variable_name}]", :class => 'form-control'
+
+            .text-center= submit_tag dqt('show.update_variable_assignment'), :class => 'btn btn-success'
+
+  - if @result_set
+    %table.table.table-striped
+      %thead
+        %tr
+          - @query.select_columns.each do |column|
+            %th.text-center
+              = column.output_name
+              = sort_icon(column.order_by) if column.order_by?
+
+
+      %tbody
+        - @result_set.each do |result|
+          %tr
+            - @query.select_columns.each do |column|
+              %td.text-center
+                - if result[column].is_a?(TrueClass) or result[column].is_a?(FalseClass)
+                  = checkbox_icon(result[column])
+                - else
+                  = result[column]
+
+    .text-center
+      - if @result_set.page_count > 1
+        %ul.pagination
+          - @result_set.pagination_pages.each do |page|
+            %li{:class => page[:class]}
+              - if page[:disabled]
+                = page[:caption]
+              - else
+                = link_to page[:caption], dq_url(nil, @query, :page => page[:number], :variables => @result_set.variables)
