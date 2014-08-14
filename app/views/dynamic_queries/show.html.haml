@@ -27,7 +27,10 @@
     %h4.fancy{:style => 'margin-bottom: 50px;'}
       %span= dqt('show.temporary_change_order')
     .text-center
-      - form_tag dq_url(nil, @query, :page => @result_set.page, :variables => @result_set.variables), :method => :get do
+      - form_tag dq_url(nil, @query), :method => :get do
+        = hidden_field_tag :page, @result_set.page
+        - @result_set.variables.each do |k,v|
+          = hidden_field_tag "variables[#{k}]", v
         %ul.sorting-list.list-inline
           - (@query.order_by_columns + (@query.columns - @query.order_by_columns)).each do |column|
             %li.btn.btn-default
