@@ -6,13 +6,13 @@ class DynamicQueries::ResultSet
   def initialize(query, options = {})
     @query   = query
     @options = options
-    @results = execute_query(options)
+    build_custom_order!
   end
 
   def processed_results
-    @processed_results ||= @results.map do |result_hash|
+    @processed_results ||= execute_query(@options).each_with_index.map do |result_hash, index|
       Hash[
-        result_hash.map do |k, v|
+        [[:__row_number__, index + offset + 1]] + result_hash.map do |k, v|
           column = @query.query_column(k)
           [column, process_value(column, v)]
         end
@@ -78,7 +78,56 @@ class DynamicQueries::ResultSet
     total_count % per_page == 0 ? count : count + 1
   end
 
+  def to_csv
+    FasterCSV.generate(:col_sep => ',', :headers => :first_row) do |csv|
+      csv << @query.select_columns.map(&:output_name)
+      to_csv_rows.each {|row| csv << row}
+    end
+  end
+
   private
+
+  #
+  # Temporarily changes the order_by value of the query columns
+  # Do NOT save the query after this was done (shouldn't happen as it will only happen in #show)
+  #
+  def build_custom_order!
+    if custom_order = @options.delete(:custom_order)
+      order_by_columns = []
+      @query.columns.each do |column|
+        if direction = custom_order[column.identifier]
+          column.order_by = direction
+        else
+          column.order_by = nil
+        end
+      end
+    end
+  end
+
+  #
+  # @return [Fixnum] the offset the current query execution will start with
+  #
+  def offset
+    return @options[:offset].to_i if @options[:offset]
+    return (@options[:page].to_i - 1) * @options[:per_page] if @options[:page] && @options[:per_page]
+    0
+  end
+
+  #
+  # @return [Array<Array<String, Numeric>>]
+  #   Rows and columns to be used with FasterCSV
+  #
+  def to_csv_rows
+    res = []
+    each do |result|
+      row = []
+      @query.select_columns.each do |column|
+        row << result[column].to_s
+      end
+      res << row
+    end
+    res
+  end
 
   def pagination_page(number, caption = nil)
     caption ||= number.to_s

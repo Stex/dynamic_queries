@@ -25,13 +25,20 @@ class DynamicQueriesController < DynamicQueries::Configuration.parent_controller
   def show
     page = params[:page] || 1
 
-    if @query.sufficient_variables?(params[:variables])
-      @result_set = @query.execute(:variables => params[:variables], :page => page, :per_page => 30)
-    end
-
     respond_to do |format|
-      format.html
-      format.js
+      format.html {
+        if @query.sufficient_variables?(params[:variables])
+          @result_set = @query.execute(:variables => params[:variables], :page => page, :per_page => 30, :custom_order => params[:order_by])
+        end
+      }
+      format.csv {
+        if @query.sufficient_variables?(params[:variables])
+          @result_set = @query.execute(:variables => params[:variables], :custom_order => params[:order_by])
+          render :text => @result_set.to_csv
+        else
+          render :text => 'Insufficient Variable Assignment!'
+        end
+      }
     end
   end
 

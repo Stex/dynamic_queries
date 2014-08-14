@@ -20,6 +20,7 @@ de:
       new:                 "Neue Anfrage"
       edit_condition:      "Bedingung bearbeiten"
       save:                "Speichern"
+      update_order:        "Aktualisieren"
 
     aggregate_functions:
       count:          "Anzahl der Spaltenwerte"
@@ -84,6 +85,9 @@ de:
       page_header:                "Anfrage ausführen: %{name}"
       variables_required:         "Zur Ausführung der Anfrage werden Werte für folgende Variablen benötigt:"
       update_variable_assignment: "Anfrage mit diesen Werten ausführen"
+      export_as_csv:              "Als CSV exportieren"
+      temporary_change_order:     "Sortierung der Ergebnisse für diese Ausführung ändern"
+      results:                    "Ergebnisse der Abfrage"
 
     condition_types:
       null_test: "NULL / NOT NULL"
