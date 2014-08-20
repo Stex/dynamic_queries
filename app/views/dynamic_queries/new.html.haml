@@ -5,35 +5,51 @@
 
   - url = @query.new_record? ? dq_url : dq_url(nil, @query)
   - form_for @query, :url => url do |f|
+    %fieldset
+      %legend= dqt('new.name_and_description')
 
-    .row
-      .col-sm-12
-        .form-group
-          = f.label :name
-          = f.text_field :name, :class => 'form-control'
-    .row
-      .col-sm-12
-        .form-group
-          = f.label :description
-          = f.text_area :description, :class => 'form-control'
+      %p.text-info= dqt('new.name_and_description_info')
 
-    %hr{:size => 1}
+      .row
+        .col-sm-12
+          .form-group
+            = f.label :name
+            = f.text_field :name, :class => 'form-control'
+      .row
+        .col-sm-12
+          .form-group
+            = f.label :description
+            = f.text_area :description, :class => 'form-control', :style => 'height: 200px'
 
-    .table-responsive
-      %table.table.table-condensed.table-striped
-        %thead
-          %tr
-            %th.text-center= dqt('new.table.use_model')
-            %th.text-center= dqt('new.table.main_model')
-            %th= dqt('new.table.table_name')
-            %th= dqt('new.table.model_name')
-        %tbody
-          - DynamicQueries::DataCache.models.values.sort_by(&:table_name).each do |model|
+    %fieldset
+      %legend= dqt('new.model_selection')
+
+      %p.text-info= dqt('new.model_selection_info')
+
+      .table-responsive
+        %table.table.table-condensed.table-striped
+          %thead
             %tr
-              %td.text-center= check_box_tag 'dynamic_queries_query[model_names][]', model.name, f.object.includes_model?(model)
-              %td.text-center= f.radio_button :main_model_name, model.name
-              %td= model.table_name
-              %td= model.human_name(:count => 2)
+              %th.text-center{:style => 'width: 16px'}= glyphicon(:star, :title => dqt('new.table.main_model'))
+              %th.text-center{:style => 'width: 16px'}= glyphicon('th-large', :title => dqt('new.table.use_model'))
+
+              %th.text-center{:style => 'width: 16px'}
+
+              %th= dqt('new.table.table_name')
+              %th= dqt('new.table.model_name')
+          %tbody
+            - DynamicQueries::DataCache.models.values.sort_by(&:table_name).each do |model|
+              %tr
+                %td.text-center{:style => 'vertical-align: middle;'}= f.radio_button :main_model_name, model.name
+                %td.text-center{:style => 'vertical-align: middle;'}= check_box_tag 'dynamic_queries_query[model_names][]', model.name, f.object.includes_model?(model)
+                %td{:style => 'vertical-align: middle;'}
+                  - if @query.joined_model?(model)
+                    = glyphicon(:link, :title => dqt('joined_model'))
+                  - elsif @query.includes_model?(model)
+                    = glyphicon(:random, :title => dqt('cross_joined_model'))
+
+                %td= model.table_name
+                %td= model.human_name(:count => 2)
 
     %hr{:size => 1}
 

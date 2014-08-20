@@ -4,13 +4,14 @@ module DynamicQueriesHelper
   ACTION_ICONS = {
       :add    => 'plus',
       :remove => 'minus',
-      :edit   => 'pencil'
+      :edit   => 'pencil',
+      :move   => 'move'
   }
 
   #
   # Generates HAML options for the model panels during query creation
   #
-  def model_panel_options(model)
+  def model_panel_options(model, key)
     options = {
         :data  => {
             'model-name' => model.to_s
@@ -21,7 +22,7 @@ module DynamicQueriesHelper
 
     options[:class] = @query.main_model?(model) ? 'panel-success' : 'panel-default'
 
-    if positions = @query.model_positions[model.to_s]
+    if positions = @query.model_positions(key)[model.to_s]
       options[:data]['position-left'] = positions[:left]
       options[:data]['position-top']  = positions[:top]
     end

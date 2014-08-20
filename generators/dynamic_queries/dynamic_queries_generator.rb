@@ -9,6 +9,6 @@ class DynamicQueriesGenerator < Rails::Generator::NamedBase
   protected
 
   def banner
-    "Usage: #{$0} rjs_helpers assets"
+    "Usage: #{$0} dynamic_queries assets"
   end
 end

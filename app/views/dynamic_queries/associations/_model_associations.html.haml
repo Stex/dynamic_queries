@@ -4,7 +4,8 @@
 
 .panel-heading
   %h3.panel-title
-    #{model.human_name} (#{model.table_name})
+    = action_icon(:move)
+    #{model.human_name(:count => 2)} (#{model.table_name})
     - unless @query.main_model?(model)
       = link_to_remote remove_icon, :url => dq_url(:remove_model, @query, :model_name => model.to_s),
                                     :html => {:class => 'pull-right'}

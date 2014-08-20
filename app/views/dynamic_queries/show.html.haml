@@ -4,7 +4,7 @@
       = @query.name
       .btn-group.pull-right
         = link_to dqt('back_to_index'), dq_url, :class => 'btn btn-default'
-        - if @result_set
+        - if @result_set && !@result_set.execution_timeout?
           = link_to dqt('show.export_as_csv'), dq_url(nil, @query, :variables => @result_set.variables, :format => :csv, :order_by => params[:order_by]), :class => 'btn btn-primary'
 
 
@@ -24,55 +24,59 @@
             .text-center= submit_tag dqt('show.update_variable_assignment'), :class => 'btn btn-success'
 
   - if @result_set
-    %h4.fancy{:style => 'margin-bottom: 50px;'}
-      %span= dqt('show.temporary_change_order')
-    .text-center
-      - form_tag dq_url(nil, @query), :method => :get do
-        = hidden_field_tag :page, @result_set.page
-        - @result_set.variables.each do |k,v|
-          = hidden_field_tag "variables[#{k}]", v
-        %ul.sorting-list.list-inline
-          - (@query.order_by_columns + (@query.columns - @query.order_by_columns)).each do |column|
-            %li.btn.btn-default
-              = column.output_name
-              = select_tag "order_by[#{column.identifier}]", sort_directions(column), :class => 'form-control input-sm'
-          %li.no-sorting
-            = submit_tag dqt('actions.update_order'), :class => 'btn btn-primary'
+    - if @result_set.execution_timeout?
+      %p.text-info= dqt('show.execution_timeout', :timeout => DynamicQueries::ResultSet::EXECUTION_TIMEOUT)
 
-    %h4.fancy{:style => 'margin-top: 50px;'}
-      %span= dqt('show.results')
-
-    .table-responsive
-      %table.table.table-striped
-        %thead
-          %tr
-            %th.text-center #
-            - @query.select_columns.each do |column|
-              %th.text-center
+    - else
+      %h4.fancy{:style => 'margin-bottom: 50px;'}
+        %span= dqt('show.temporary_change_order')
+      .text-center
+        - form_tag dq_url(nil, @query), :method => :get do
+          = hidden_field_tag :page, @result_set.page
+          - @result_set.variables.each do |k,v|
+            = hidden_field_tag "variables[#{k}]", v
+          %ul.sorting-list.list-inline
+            - (@query.order_by_columns + (@query.columns - @query.order_by_columns)).each do |column|
+              %li.btn.btn-default
                 = column.output_name
-                = sort_icon(column.order_by) if column.order_by?
+                = select_tag "order_by[#{column.identifier}]", sort_directions(column), :class => 'form-control input-sm'
+            %li.no-sorting
+              = submit_tag dqt('actions.update_order'), :class => 'btn btn-primary'
 
+      %h4.fancy{:style => 'margin-top: 50px;'}
+        %span= dqt('show.results')
 
-        %tbody
-          - @result_set.each do |result|
+      .table-responsive
+        %table.table.table-striped
+          %thead
             %tr
-              %td.text-center= result[:__row_number__]
+              %th.text-center #
               - @query.select_columns.each do |column|
-                %td.text-center
-                  - if result[column].is_a?(TrueClass) or result[column].is_a?(FalseClass)
-                    = checkbox_icon(result[column])
-                  - else
-                    = result[column]
+                %th.text-center
+                  = column.output_name
+                  = sort_icon(column.order_by) if column.order_by?
 
-    .text-center
-      - if @result_set.page_count > 1
-        %ul.pagination
-          - @result_set.pagination_pages.each do |page|
-            %li{:class => page[:class]}
-              - if page[:disabled]
-                = page[:caption]
-              - else
-                = link_to page[:caption], dq_url(nil, @query, :page => page[:number], :variables => @result_set.variables, :order_by => params[:order_by])
+
+          %tbody
+            - @result_set.each do |result|
+              %tr
+                %td.text-center= result[:__row_number__]
+                - @query.select_columns.each do |column|
+                  %td.text-center
+                    - if result[column].is_a?(TrueClass) or result[column].is_a?(FalseClass)
+                      = checkbox_icon(result[column])
+                    - else
+                      = result[column]
+
+      .text-center
+        - if @result_set.page_count > 1
+          %ul.pagination
+            - @result_set.pagination_pages.each do |page|
+              %li{:class => page[:class]}
+                - if page[:disabled]
+                  = page[:caption]
+                - else
+                  = link_to page[:caption], dq_url(nil, @query, :page => page[:number], :variables => @result_set.variables, :order_by => params[:order_by])
 
 :javascript
   $(document).ready(function() {

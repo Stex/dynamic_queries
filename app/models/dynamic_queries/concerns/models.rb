@@ -76,7 +76,8 @@ module DynamicQueries::Concerns::Models
       model_names.delete(model.to_s)
 
       #Remove the model position
-      model_positions.delete(model.name)
+      model_positions('associations').delete(model.name)
+      model_positions('columns').delete(model.name)
 
       return model
     end
@@ -112,17 +113,23 @@ module DynamicQueries::Concerns::Models
   #   Model box positions in the format
   #     {model_name => {:top => x, :left => y}}
   #
-  def model_positions
+  def model_positions(key)
     self.model_positions_hash ||= {}
+    self.model_positions_hash[key.to_s] ||= {}
   end
 
   #
   # Sets the model positions after a model box
   # was dragged to a new position within the canvas
   #
-  def model_positions=(new_positions)
+  # @param [String] key
+  #   There are different positions for the associations and the columns step,
+  #   so this param is used to differ them.
+  #   May be one of +associations+ or +columns+
+  #
+  def set_model_positions(key, new_positions)
     new_positions.each do |model_name, (top, left)|
-      model_positions[model_name.classify] = {:top => top.to_i, :left => left.to_i}
+      model_positions(key)[model_name.classify] = {:top => top.to_i, :left => left.to_i}
     end
   end
 

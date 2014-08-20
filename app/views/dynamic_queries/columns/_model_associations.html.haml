@@ -4,7 +4,7 @@
 
 .panel-heading
   %h3.panel-title
-    #{model.human_name} (#{model.table_name})
+    #{model.human_name(:count => 2)} (#{model.table_name})
 
 %table.table.table-condensed.table-hover
   = render :partial => 'dynamic_queries/columns/column', :collection => model.columns

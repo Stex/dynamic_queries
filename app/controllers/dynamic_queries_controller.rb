@@ -27,6 +27,12 @@ class DynamicQueriesController < DynamicQueries::Configuration.parent_controller
 
     respond_to do |format|
       format.html {
+        unless @query.valid_sql?
+          flash[:error] = dqt('show.invalid_sql')
+          flash.keep
+          redirect_to :back and return
+        end
+
         if @query.sufficient_variables?(params[:variables])
           @result_set = @query.execute(:variables => params[:variables], :page => page, :per_page => 30, :custom_order => params[:order_by])
         end
@@ -127,7 +133,7 @@ class DynamicQueriesController < DynamicQueries::Configuration.parent_controller
   # was dragged to a new position in the canvas
   #
   def update_model_positions
-    @query.model_positions = params[:positions]
+    @query.set_model_positions(params[:key], params[:positions])
     @query.save
 
     respond_to do |format|
@@ -329,6 +335,6 @@ class DynamicQueriesController < DynamicQueries::Configuration.parent_controller
   #
   def dqt(dot_path, args = {})
     args[:scope] = 'dynamic_queries'
-    I18n.t(dot_path, args)
+    I18n.t(dot_path, args).try_html_safe
   end
 end

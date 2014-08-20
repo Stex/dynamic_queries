@@ -1,0 +1,8 @@
+- if @query.valid_sql?
+  - text = [@query.to_sql]
+  - text << @query.sql_error if @query.timeout?
+
+  %pre#generated_sql= text.join("\n")
+
+- else
+  %pre.text-danger#generated_sql= @query.sql_error

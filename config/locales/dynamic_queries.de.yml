@@ -45,26 +45,68 @@ de:
       asc:  "Aufsteigend"
       desc: "Absteigend"
 
+    joined_model:       "Diese Tabelle ist Teil der Assoziationskette"
+    cross_joined_model: "Diese Tabelle wird als Kreuzprodukt in die Anfrage einbezogen"
+
+    #---------------------------------------------------------
+    #                   ASSOCIATIONS action
+    #---------------------------------------------------------
+
     associations:
       page_header: "Schritt 2: Auswahl der Beziehungen"
       model_not_part_of_join_chain: "Dieses Model ist nicht Bestandteil der JOIN-Kette, daher können Sie keine weiteren Beziehungen hinzufügen."
+      description: "In diesem Schritt können sie die Assoziationskette (JOINS) zwischen den ausgewählten Tabellen erstellen.<br />
+                    Die Kette muss mit der Haupttabelle (grün) beginnen und jede weitere Tabelle darf nur einmal von
+                    einer Verbindung getroffen werden.<br />
+                    Wenn Sie eine Assoziation auswählen, die zu einer Tabelle führt, welches noch nicht Bestandteil
+                    der Abfrage ist, wird es automatisch hinzugefügt."
+
+    #---------------------------------------------------------
+    #                   COLUMNS action
+    #---------------------------------------------------------
 
     columns:
       page_header: "Schritt 3: Auswahl der Tabellenspalten"
+      description: "In diesem Schritt können Sie die Tabellenspalten auswählen, die Sie in Ihrer Anfrage verwenden möchten.<br />
+                    Jede Spalte kann beliebig oft verwendet werden (z.B. einmal als Bedingung, einmal als Aggregatfunktion)"
+
+    #---------------------------------------------------------
+    #                     DESTROY action
+    #---------------------------------------------------------
 
     destroy:
       flash:
         success: "Die Anfrage wurde erfolgreich gelöscht."
         error:   "Die Anfrage konnte nicht gelöscht werden."
 
+    #---------------------------------------------------------
+    #                     NEW action
+    #---------------------------------------------------------
+
     new:
       page_header:     "Schritt 1: Auswahl der Haupttabelle"
       submit_caption:  "Models speichern und weiter"
       table:
-        main_model:      "Hauptmodel"
-        use_model:       "Model einbeziehen"
+        main_model:      "Wählen Sie in dieser Spalte die Haupttabelle der Anfrage aus, welche den Start der Assoziationskette darstellt."
+        use_model:       "Wählen Sie hier weitere Tabellen aus, die Sie verwenden wollen."
         table_name:      "Tabellenname"
         model_name:      "Modelname"
+
+      name_and_description: "Name und Beschreibung der Anfrage"
+      name_and_description_info: "Bitte vergeben Sie einen Namen und eine Beschreibung für diese Anfragen, so dass
+                                  Sie (oder andere Nutzer) sie später einfacher benutzen können."
+
+      model_selection:      "Auswahl der in der Anfrage genutzten Models / Tabellen"
+      model_selection_info: "Durch das Framework, welches dieser Webanwendung zugrunde liegt bedingt, bestehen Anfragen
+                             im Kern aus einer Assoziationskette (automatische Datenbank-Joins). <br />
+                             Daher benötigt jede Anfrage eine Starttabelle, von der aus die Kette aufgebaut wird.<br />
+                             Alle Tabellen, die hier ausgewählt, aber später nicht Teil der Kette werden, werden in der Anfrage
+                             als Kreuzprodukt behandelt (cross joins), liefern also alle möglichen Ergebnisse der
+                             gekreuzten Tabellen zurück."
+
+    #---------------------------------------------------------
+    #                    QUERY OPTIONS action
+    #---------------------------------------------------------
 
     query_options:
       page_header: "Schritt 4: Details, Details, Details"
@@ -79,9 +121,13 @@ de:
         aggregate_functions: "Aggregatfunktionen"
         conditions:          "Bedingungen"
       preview_variables_required: "Die Anfrage benötigt zur Ausführung Variablenwerte, daher ist keine Vorschau möglich."
+      preview_timeout:            "Das Ausführen der Anfrage dauert zu lange, daher ist keine Vorschau möglich."
       connectors_and_parenthesis: "Konnektoren und Klammern"
       save_conditions:            "Bedingungen speichern"
 
+    #---------------------------------------------------------
+    #                     SHOW action
+    #---------------------------------------------------------
 
     show:
       page_header:                "Anfrage ausführen: %{name}"
@@ -90,6 +136,12 @@ de:
       export_as_csv:              "Als CSV exportieren"
       temporary_change_order:     "Sortierung der Ergebnisse für diese Ausführung ändern"
       results:                    "Ergebnisse der Abfrage"
+      execution_timeout:          "Ihre Anfrage konnte nicht vollständig ausgeführt werden, da sie länger als
+                                   %{timeout}ms benötigte und daher automatisch abgebrochen wurde.<br />
+                                   Wenn Sie CROSS JOINS in Ihrer Anfrage nutzen, sollten Sie diese über
+                                   Bedingungen Einschränken um die Ausführungszeit zu verkürzen."
+      invalid_sql:                 "Die gewünschte Anfrage ist nicht ausführbar. Sie können diesen Fehler beheben,
+                                    indem Sie die Anfrage bearbeiten."
 
     condition_types:
       null_test: "NULL / NOT NULL"
@@ -98,6 +150,7 @@ de:
       variable:  "Vergleich mit Variable"
 
     errors:
+      sql_timeout: "Die Anfrage wurde abgebrochen, da sie länger als %{timeout}ms benötigte."
       conditions:
         compare_variable_name:
           blank: "Bitte geben Sie einen Variablennamen an."

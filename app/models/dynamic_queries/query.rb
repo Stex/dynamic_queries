@@ -26,6 +26,10 @@ class DynamicQueries::Query < ActiveRecord::Base
   include DynamicQueries::Concerns::Models
   include DynamicQueries::Concerns::Columns
 
+  include DynamicQueries::DatabaseHelpers
+
+  TIMEOUT_MS = 250
+
   #----------------------------------------------------------------
   #                        Validations
   #----------------------------------------------------------------
@@ -73,28 +77,15 @@ class DynamicQueries::Query < ActiveRecord::Base
   # @return [Boolean] +true+ if the query produces valid SQL
   #
   def valid_sql?
-    !sql_error
+    !sql_error?(to_sql)
   end
 
-  #
-  # Tries to execute the query and captures possible SQL errors occuring
-  #
-  # @return [String, Boolean]
-  #   The error message if an error occured, +false+ otherwise
-  #
   def sql_error
-    return @sql_error unless @sql_error.nil?
+    thrown_sql_error(to_sql).first
+  end
 
-    begin
-      Timeout::timeout(5) {
-        main_model.model_class.first(to_finder_hash)
-        @sql_error = false
-      }
-    rescue Exception => e
-      logger.error e.message
-      logger.error e.backtrace.join("\n")
-      @sql_error = e.message
-    end
+  def timeout?
+    thrown_sql_error(to_sql).last == :timeout
   end
 
   #
@@ -116,10 +107,9 @@ class DynamicQueries::Query < ActiveRecord::Base
   # @return [Boolean] +true+ if the query can be executed. This is the case if:
   #
   #   1. It has at least one select column
-  #   2. It produces valid SQL
   #
   def executable?
-    select_columns.any? && valid_sql?
+    select_columns.any?
   end
 
   #

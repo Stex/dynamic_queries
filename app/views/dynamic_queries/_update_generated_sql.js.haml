@@ -1,2 +1,2 @@
-= js_update_element '#generated_sql', (@query.valid_sql? ? @query.to_sql : @query.sql_error)
+= js_replace_element '#generated_sql', :partial => 'generated_sql'
 $("#generated_sql").effect("highlight", {color: "#428BCA"}, 750);

@@ -2,7 +2,7 @@
   .page-header
     %h1= dqt('query_options.page_header')
     = render :partial => 'progressbar'
-    %pre#generated_sql= @query.valid_sql? ? @query.to_sql : @query.sql_error
+    = render :partial => 'generated_sql'
 
   .table-responsive
     %table.table.table-striped.table-bordered.columns-table
@@ -62,9 +62,8 @@
 
   .preview-box
     %h4= dqt('preview')
-    .table-responsive
-      %table.table.table-hover.table-striped.table-bordered#query_preview
-        = render :partial => 'dynamic_queries/query_options/preview'
+    #query_preview
+      = render :partial => 'dynamic_queries/query_options/preview'
 
   #conditions_modal.modal.fade{:tabindex => '-1', :role => :dialog, 'aria-hidden' => :true}
 

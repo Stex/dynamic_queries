@@ -1,6 +1,11 @@
 class DynamicQueries::ResultSet
   unloadable if Rails.env.development?
 
+  #Timeout for query execution in #show
+  EXECUTION_TIMEOUT = 15000
+
+  include DynamicQueries::DatabaseHelpers
+
   delegate :each, :first, :last, :count, :[], :to => :processed_results
 
   def initialize(query, options = {})
@@ -26,8 +31,10 @@ class DynamicQueries::ResultSet
   #
   def total_count
     unless @total_count
-      res = ActiveRecord::Base.connection.execute("SELECT COUNT(*) as row_count FROM (#{@query.to_sql(:variables => variables)}) AS subquery")
-      @total_count = res.first['row_count'].to_i
+      with_sql_timeout do
+        res = ActiveRecord::Base.connection.execute("SELECT COUNT(*) as row_count FROM (#{@query.to_sql(:variables => variables)}) AS subquery")
+        @total_count = res.first['row_count'].to_i
+      end
     end
     @total_count
   end
@@ -83,6 +90,15 @@ class DynamicQueries::ResultSet
       csv << @query.select_columns.map(&:output_name)
       to_csv_rows.each {|row| csv << row}
     end
+  end
+
+  #
+  # @return [Boolean] +true+ if the query execution was stopped
+  #   as it took more than EXECUTION_TIMEOUT ms
+  #
+  def execution_timeout?
+    processed_results
+    !!@execution_timeout
   end
 
   private
@@ -150,7 +166,15 @@ class DynamicQueries::ResultSet
   end
 
   def execute_query(options)
-    @query.main_model.model_class.connection.select_all(@query.to_sql(options))
+    begin
+      with_sql_timeout(EXECUTION_TIMEOUT) do
+        @query.main_model.model_class.connection.select_all(@query.to_sql(options))
+      end
+    rescue ActiveRecord::StatementInvalid => e
+      if sql_timeout?(e)
+        @execution_timeout = true
+      end
+      {}
+    end
   end
-
 end
