@@ -1,16 +1,16 @@
 window.dynamicQueries =
   csrf: {}
 
-  #
-  # Loads the protect from forgery token from Rails' meta tag for easer usage
-  #
+#
+# Loads the protect from forgery token from Rails' meta tag for easer usage
+#
   loadCSRF: () ->
     dynamicQueries.csrf.param = jQuery('meta[name=csrf-param]').attr("content")
     dynamicQueries.csrf.token = jQuery('meta[name=csrf-token]').attr("content")
 
-  #
-  # Builds a jQuery data object with the current CSRF token
-  #
+#
+# Builds a jQuery data object with the current CSRF token
+#
   CSRFdata: (data) ->
     data = {} unless data?
     data[dynamicQueries.csrf.param] = dynamicQueries.csrf.token
@@ -18,15 +18,30 @@ window.dynamicQueries =
 
   actions:
 
+  #----------------------------------------------------------------
+  #                        SHOW action
+  #----------------------------------------------------------------
+
     show:
+
+    #
+    # Initializes the custom order sortable on #show
+    # It works by setting a hidden position field in each of the
+    # sortable elements
+    #
       init: () ->
         $("ul.sorting-list").sortable
           axis: 'x'
           items: "li:not(.no-sorting)"
+          update: (event, ui) ->
+            pos = 0
+            $(event.target).find('li:not(.no-sorting)').each () ->
+              $(@).find("input[type=hidden]").val(pos)
+              pos++
 
-    #----------------------------------------------------------------
-    #                    Model Selection Step
-    #----------------------------------------------------------------
+  #----------------------------------------------------------------
+  #                    Model Selection Step
+  #----------------------------------------------------------------
 
     new:
       init: () ->
@@ -43,10 +58,10 @@ window.dynamicQueries =
         else
           $(elem).parents('tr').removeClass('info')
 
-      #When a new main model is chosen, make sure that
-      # 1. its row gets a distinctive colour
-      # 2. it is also part of the models (checkbox checked)
-      # 3. it can't be removed from the models (checkbox deactivated)
+    #When a new main model is chosen, make sure that
+    # 1. its row gets a distinctive colour
+    # 2. it is also part of the models (checkbox checked)
+    # 3. it can't be removed from the models (checkbox deactivated)
       handleRadio: (elem) ->
         row      = $(elem).parents('tr')
         table    = $(elem).parents('table')
@@ -62,9 +77,9 @@ window.dynamicQueries =
         checkbox.prop('readonly', true)
         checkbox.prop('checked', true)
 
-    #----------------------------------------------------------------
-    #                        Associations Step
-    #----------------------------------------------------------------
+  #----------------------------------------------------------------
+  #                        Associations Step
+  #----------------------------------------------------------------
 
     associations:
       lowermostBottom: 0
@@ -81,11 +96,11 @@ window.dynamicQueries =
           dynamicQueries.actions.associations.resizeCanvas()
           dynamicQueries.actions.associations.drawAllConnections()
 
-      #
-      # Sets the model box positions within the canvas.
-      # The top and left positions are taken from 'data-position-X' attributes
-      # in the panel
-      #
+    #
+    # Sets the model box positions within the canvas.
+    # The top and left positions are taken from 'data-position-X' attributes
+    # in the panel
+    #
       setBoxPositions: () ->
         $('#dynamic_queries .model').each () ->
           box = $(@)
@@ -94,13 +109,13 @@ window.dynamicQueries =
           if box.data('positionLeft')
             box.css('left', box.data('positionLeft'))
 
-      #
-      # Initializes the draggable functionality of the model boxes
-      # using jQuery UI in the background.
-      #
-      # Once a box is released, an AJAX call is made to inform the server
-      # about the new box positions.
-      #
+    #
+    # Initializes the draggable functionality of the model boxes
+    # using jQuery UI in the background.
+    #
+    # Once a box is released, an AJAX call is made to inform the server
+    # about the new box positions.
+    #
       initModelDraggables: () ->
         jsPlumb.draggable $('#dynamic_queries .model'),
           handle:      '.panel-heading'
@@ -118,7 +133,7 @@ window.dynamicQueries =
             if ui.position.left > (containerRightBorder - ui.helper.outerWidth())
               ui.position.left = containerRightBorder - ui.helper.outerWidth()
 
-          #on drag stop, resize the canvas to fit all model boxes
+        #on drag stop, resize the canvas to fit all model boxes
           stop: (event, ui) ->
             dynamicQueries.actions.associations.resizeCanvas()
 
@@ -130,20 +145,20 @@ window.dynamicQueries =
             $.post(dynamicQueries.actions.associations.updatePositionsUrl,
               dynamicQueries.CSRFdata({'positions': positions}), null, 'script')
 
-      #
-      # Adjusts the canvas height to fit all model boxes.
-      # This is necessary in 2 cases:
-      #   1. The page was just loaded and the boxes moved to their saved positions
-      #   2. A model box was dragged to a new position which is below the old canvas bottom
-      #
+    #
+    # Adjusts the canvas height to fit all model boxes.
+    # This is necessary in 2 cases:
+    #   1. The page was just loaded and the boxes moved to their saved positions
+    #   2. A model box was dragged to a new position which is below the old canvas bottom
+    #
       resizeCanvas: () ->
         dynamicQueries.actions.associations.updateLowermostBottom()
         $('#dynamic_queries .model-canvas').css('height', dynamicQueries.actions.associations.lowermostBottom)
 
-      #
-      # Determines the bottom position of the lowermost model box
-      # This is mainly used to resize the canvas to contain all boxes.
-      #
+    #
+    # Determines the bottom position of the lowermost model box
+    # This is mainly used to resize the canvas to contain all boxes.
+    #
       updateLowermostBottom: () ->
         canvasTop = $('#dynamic_queries .model-canvas').position().top
         newBottom = 0
@@ -152,9 +167,9 @@ window.dynamicQueries =
           newBottom = Math.max(newBottom, relativeBottom)
         dynamicQueries.actions.associations.lowermostBottom = newBottom
 
-      #
-      # Draws a connection from +source+ to +target+
-      #
+    #
+    # Draws a connection from +source+ to +target+
+    #
       drawConnection: (connection) ->
         source = jsPlumb.addEndpoint $(connection.source),
           isSource: true
@@ -182,25 +197,25 @@ window.dynamicQueries =
             ["Label", {'label': connection.label, cssClass: "connection-label"}]
           ]
 
-      #
-      # Removes all connections from the canvas
-      #
+    #
+    # Removes all connections from the canvas
+    #
       clearConnections: () ->
         jsPlumb.reset()
 
-      #
-      # Clears the current connections and redraws them
-      # If new connections are given as argument, they will be used instead of the old ones
-      #
+    #
+    # Clears the current connections and redraws them
+    # If new connections are given as argument, they will be used instead of the old ones
+    #
       redrawConnections: (newConnections) ->
         dynamicQueries.actions.associations.connections = newConnections if newConnections?
         dynamicQueries.actions.associations.clearConnections()
         dynamicQueries.actions.associations.drawAllConnections()
 
-      #
-      # Draws all connections saved in +connections+
-      # Expects connections to be an object containing source, target and label
-      #
+    #
+    # Draws all connections saved in +connections+
+    # Expects connections to be an object containing source, target and label
+    #
       drawAllConnections: () ->
         $.each dynamicQueries.actions.associations.connections, () ->
           dynamicQueries.actions.associations.drawConnection @
@@ -209,7 +224,7 @@ window.dynamicQueries =
         verticalCenter = ($(connection.association).position().top + ($(connection.association).height() / 2)) / $(connection.source).height()
 
         [[0, verticalCenter, -1, 0]
-        [1, verticalCenter, 1, 0]]
+         [1, verticalCenter, 1, 0]]
 
     columns:
       init: (url, connections) ->
@@ -223,9 +238,9 @@ window.dynamicQueries =
           dynamicQueries.actions.columns.drawAllConnections()
 
 
-      #
-      # Draws a connection from +source+ to +target+
-      #
+    #
+    # Draws a connection from +source+ to +target+
+    #
       drawConnection: (connection) ->
         source = jsPlumb.addEndpoint $(connection.source),
           isSource: true
@@ -253,33 +268,33 @@ window.dynamicQueries =
             ["Label", {'label': connection.label, cssClass: "connection-label"}]
           ]
 
-      #
-      # Clears the current connections and redraws them
-      # If new connections are given as argument, they will be used instead of the old ones
-      #
+    #
+    # Clears the current connections and redraws them
+    # If new connections are given as argument, they will be used instead of the old ones
+    #
       redrawConnections: (newConnections) ->
         dynamicQueries.actions.associations.connections = newConnections if newConnections?
         dynamicQueries.actions.associations.clearConnections()
         dynamicQueries.actions.columns.drawAllConnections()
 
-      #
-      # Draws all connections saved in +connections+
-      # Expects connections to be an object containing source, target and label
-      #
+    #
+    # Draws all connections saved in +connections+
+    # Expects connections to be an object containing source, target and label
+    #
       drawAllConnections: () ->
         $.each dynamicQueries.actions.associations.connections, () ->
           dynamicQueries.actions.columns.drawConnection @
 
-    #----------------------------------------------------------------
-    #                        Query Options Step
-    #----------------------------------------------------------------
+  #----------------------------------------------------------------
+  #                        Query Options Step
+  #----------------------------------------------------------------
 
     columnOptions:
 
-      #
-      # Set up change handlers for all column option inputs
-      # to make them submit their changed values via an AJAX call
-      #
+    #
+    # Set up change handlers for all column option inputs
+    # to make them submit their changed values via an AJAX call
+    #
       init: () ->
         dynamicQueries.actions.columnOptions.initColumnSortables()
         dynamicQueries.actions.columnOptions.initConditionCreation()
@@ -313,9 +328,9 @@ window.dynamicQueries =
           $(@).parents('.order-item').remove()
 
 
-      #
-      # Initializes the jQuery UI sortable for select/order by/... columns
-      #
+    #
+    # Initializes the jQuery UI sortable for select/order by/... columns
+    #
       initColumnSortables: () ->
         $('ul[data-column-sorting]').sortable
           axis: 'y'
@@ -329,15 +344,15 @@ window.dynamicQueries =
 
             $.post $(event.target).data('url'), params, null, 'script'
 
-      #
-      # Toggles column selection and column sorting for a certain clause
-      #
+    #
+    # Toggles column selection and column sorting for a certain clause
+    #
       toggleColumnSorting: (orderType) ->
         $("[data-column-order=#{orderType}]").toggle()
 
-      #
-      # Shows, hides or updates the condition modal (based on +action+)
-      #
+    #
+    # Shows, hides or updates the condition modal (based on +action+)
+    #
       conditionsModal: (action, content) ->
         switch action
           when 'show'

@@ -109,10 +109,11 @@ class DynamicQueries::ResultSet
   #
   def build_custom_order!
     if custom_order = @options.delete(:custom_order)
-      order_by_columns = []
       @query.columns.each do |column|
-        if direction = custom_order[column.identifier]
-          column.order_by = direction
+        direction, position = custom_order[column.identifier]['direction'], custom_order[column.identifier]['position']
+        if direction.present?
+          column.order_by          = direction
+          column.order_by_position = position
         else
           column.order_by = nil
         end

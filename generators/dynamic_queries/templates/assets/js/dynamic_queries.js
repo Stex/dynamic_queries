@@ -16,7 +16,15 @@ window.dynamicQueries = {
       init: function() {
         return $("ul.sorting-list").sortable({
           axis: 'x',
-          items: "li:not(.no-sorting)"
+          items: "li:not(.no-sorting)",
+          update: function(event, ui) {
+            var pos;
+            pos = 0;
+            return $(event.target).find('li:not(.no-sorting)').each(function() {
+              $(this).find("input[type=hidden]").val(pos);
+              return pos++;
+            });
+          }
         });
       }
     },

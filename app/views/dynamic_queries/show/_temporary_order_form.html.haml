@@ -1,0 +1,12 @@
+- form_tag dq_url(nil, @query), :method => :get do
+  = hidden_field_tag :page, @result_set.page
+  - @result_set.variables.each do |k,v|
+    = hidden_field_tag "variables[#{k}]", v
+  %ul.sorting-list.list-inline
+    - (@query.order_by_columns + (@query.columns - @query.order_by_columns)).each_with_index do |column, index|
+      %li.btn.btn-default
+        = column.output_name
+        = select_tag "order_by[#{column.identifier}][direction]", sort_directions(column), :class => 'form-control input-sm'
+        = hidden_field_tag "order_by[#{column.identifier}][position]", index
+    %li.no-sorting
+      = submit_tag dqt('actions.update_order'), :class => 'btn btn-primary'

@@ -40,7 +40,7 @@ class DynamicQueriesController < DynamicQueries::Configuration.parent_controller
       format.csv {
         if @query.sufficient_variables?(params[:variables])
           @result_set = @query.execute(:variables => params[:variables], :custom_order => params[:order_by])
-          render :text => @result_set.to_csv
+          send_data @result_set.to_csv, :filename => "#{@query.name}.csv"
         else
           render :text => 'Insufficient Variable Assignment!'
         end

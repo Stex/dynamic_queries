@@ -3,9 +3,10 @@
     %h1
       = @query.name
       .btn-group.pull-right
-        = link_to dqt('back_to_index'), dq_url, :class => 'btn btn-default'
+        = link_to glyphicon('arrow-left'), dq_url, :class => 'btn btn-default', :title => dqt('back_to_index')
         - if @result_set && !@result_set.execution_timeout?
-          = link_to dqt('show.export_as_csv'), dq_url(nil, @query, :variables => @result_set.variables, :format => :csv, :order_by => params[:order_by]), :class => 'btn btn-primary'
+          = link_to glyphicon('download-alt'), dq_url(nil, @query, :variables => @result_set.variables, :format => :csv, :order_by => params[:order_by]),
+                      :class => 'btn btn-primary', :title => dqt('show.export_as_csv')
 
 
   - if @query.requires_variables?
@@ -31,17 +32,7 @@
       %h4.fancy{:style => 'margin-bottom: 50px;'}
         %span= dqt('show.temporary_change_order')
       .text-center
-        - form_tag dq_url(nil, @query), :method => :get do
-          = hidden_field_tag :page, @result_set.page
-          - @result_set.variables.each do |k,v|
-            = hidden_field_tag "variables[#{k}]", v
-          %ul.sorting-list.list-inline
-            - (@query.order_by_columns + (@query.columns - @query.order_by_columns)).each do |column|
-              %li.btn.btn-default
-                = column.output_name
-                = select_tag "order_by[#{column.identifier}]", sort_directions(column), :class => 'form-control input-sm'
-            %li.no-sorting
-              = submit_tag dqt('actions.update_order'), :class => 'btn btn-primary'
+        = render :partial => 'dynamic_queries/show/temporary_order_form'
 
       %h4.fancy{:style => 'margin-top: 50px;'}
         %span= dqt('show.results')
